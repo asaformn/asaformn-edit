@@ -1,0 +1,29 @@
+{
+ "ad": "kanlidivane-kyk",
+ "dur": 13.4,
+ "camera": [
+  [0, 960, 560, 1],
+  [4.6, 960, 560, 1],
+  [5.5, 1010, 520, 1.15],
+  [7.5, 1010, 520, 1.15],
+  [8.5, 960, 600, 1.5],
+  [13.4, 960, 600, 1.5]
+ ],
+ "els": [
+  {"id": "obruk", "type": "obruk", "t": 0.0, "x": 960, "y": 640, "warn": 10.9},
+  {"id": "adam", "type": "figure", "t": 1.0, "x": 330, "y": 480, "S": 380, "out": 7.7, "poses": [[0, "look"]]},
+  {"id": "tik", "type": "ticks", "t": 1.82, "x": 360, "y": 335, "r0": 70, "len": 28, "angs": [-2.3, -1.57, -0.85], "out": 4.6},
+  {"id": "soru", "type": "text", "t": 1.82, "x": 500, "y": 300, "font": "xb", "size": 110, "col": "mercan", "align": "center", "text": "?", "out": 4.6},
+  {"id": "ok1", "type": "arrow", "t": 2.78, "x": 700, "y": 400, "len": 150, "ang": 0.5, "out": 4.6},
+  {"id": "serit", "type": "ribbon", "t": 3.06, "x": 124, "y": 64, "space": "screen", "text": "Kanlıdivane", "out": 7.7},
+  {"id": "kart", "type": "card", "t": 5.74, "x": 1130, "y": 120, "w": 620, "title": "Neden «Kanlıdivane»?", "body": "Bu ismin bir sebebi var.", "out": 7.7},
+  {"id": "ins1", "type": "figure", "t": 7.94, "x": 880, "y": 690, "S": 200, "poses": [[0, "stand"], [10.9, "raise"]]},
+  {"id": "ins2", "type": "figure", "t": 7.94, "x": 1070, "y": 690, "S": 200, "poses": [[0, "wave"]]},
+  {"id": "ev1", "type": "ev", "t": 8.62, "x": 740, "y": 735, "scale": 1},
+  {"id": "ev2", "type": "ev", "t": 9.1, "x": 1220, "y": 735, "scale": 1},
+  {"id": "ev3", "type": "ev", "t": 9.28, "x": 975, "y": 690, "scale": 0.8},
+  {"id": "devasa", "type": "text", "t": 10.22, "x": 500, "y": 400, "font": "b", "size": 60, "col": "ink", "align": "center", "text": "devasa"},
+  {"id": "tehlike", "type": "text", "t": 10.9, "x": 1380, "y": 400, "font": "xb", "size": 64, "col": "mercan", "align": "center", "text": "tehlikeli"},
+  {"id": "ok2", "type": "arrow", "t": 11.9, "x": 960, "y": 280, "len": 240, "ang": 1.5708}
+ ]
+}

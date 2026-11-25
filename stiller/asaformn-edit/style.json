@@ -1,0 +1,61 @@
+{
+  "slug": "asaformn-edit",
+  "ad": "asaformn-edit",
+  "durum": "taslak — stil adı onay bekliyor",
+  "gorunus_kaynagi": "Sketchnote (No.17, Lemo-Opuscar)",
+  "hareket_kaynagi": "Stick-figure Explainer (No.18, Lemo-Opuscar)",
+  "boyut": "1920x1080",
+  "fps": 60,
+  "renkler": {
+    "kagit": "#F7F3EC",
+    "kagit_koyu": "#EDE6DA",
+    "murekkep": "#1F2A44",
+    "murekkep_soluk": "#5B6477",
+    "mavi": "#2F5D8A",
+    "mercan": "#D9533F",
+    "hardal": "#F2B544",
+    "nane": "#2E8A78",
+    "nokta_izgara": "#D9D7D4",
+    "marker_acik": "rgba(31,42,68,.14)",
+    "marker_orta": "rgba(31,42,68,.26)",
+    "marker_koyu": "rgba(31,42,68,.42)"
+  },
+  "fontlar": {
+    "aile": "Shantell Sans (OFL, github.com/arrowtype/shantell-sans)",
+    "dosyalar": "fontlar/shantell-sans/",
+    "baslik_ve_serit": "Informal Bouncy ExtraBold, 56-84 px",
+    "kart_basligi": "Informal Bouncy Bold, 44-48 px",
+    "vurgu_kelime": "Informal Bouncy SemiBold/Bold",
+    "govde": "Informal Medium, 32-36 px",
+    "ince_not": "Informal Regular, 26-30 px"
+  },
+  "nokta_izgara": {
+    "aralik_px": 26,
+    "nokta_px": 1.3
+  },
+  "golge_yonu": "sag-alt, kutularda ~9-10 px",
+  "cizgi_kalinligi_px": 8,
+  "yazi_girisi": {
+    "kayma_px": [
+      12,
+      22
+    ],
+    "sure_sn": 0.4,
+    "cikis": "solarak"
+  },
+  "belirme_tasmasi": 0.2,
+  "zincir_kaldirma_gecikmesi_sn": 0.06,
+  "palet_kaynagi": "Kanal Tipi tasarım sistemi (claude.ai artifact)",
+  "renk_anlamlari": {
+    "mavi": "kanalın imzası: ana karakter, başlık şeritleri, oklar",
+    "mercan": "dikkat, yanlış bilinen, hata, aşk/heyecan",
+    "hardal": "ipucu, fikir, enerji, dopamin",
+    "nane": "doğru yöntem, tik, 'sonra' karesi"
+  },
+  "renk_oranlari": {
+    "kagit": 0.6,
+    "mavi_ve_murekkep": 0.25,
+    "vurgu_en_fazla": 0.15,
+    "karede_en_fazla_vurgu_rengi": 2
+  }
+}

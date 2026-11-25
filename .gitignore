@@ -1,0 +1,15 @@
+.DS_Store
+__pycache__/
+*.pyc
+node_modules/
+.venv/
+calisma/
+*.mp4
+*.mov
+*.wav
+!sesler/**/*.wav
+motor/**/out/
+motor/**/frames/
+test/
+._*
+_to_delete/
