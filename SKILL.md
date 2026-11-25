@@ -16,9 +16,9 @@ Bu videolarda çekilmiş görüntü yoktur. Görseller şunlardan oluşur:
 ## Araçlar ve dosyalar
 
 - DaVinci Resolve ile konuşma: DaVinci MCP aracındaki `run_script` (Resolve scripting API).
-- Yardımcı scriptler (planlandı, henüz yazılmadı): `scripts/davinci/ses_bul.py`, `scripts/davinci/yerlestir.py`, `scripts/davinci/dikey_timeline.py`, `scripts/davinci/render.py`, `scripts/kontrol.py`.
-- Kelime zamanlaması: `npx @veedstudio/openedit-cli transcribe --provider whisperx` (özellik 18).
-- Stil motoru (planlandı): `motor/`. asaformn-edit sahneleri bu motorla şeffaf arka planlı (alpha) video olarak üretilir.
+- Yardımcı scriptler: `scripts/davinci/` (ses_bul, yerlestir, dikey_timeline, render), `scripts/kelime_zamanlari.py`, `scripts/master.py`, `scripts/kontrol.py`.
+- Kelime zamanlaması: `scripts/kelime_zamanlari.py` (faster-whisper, özellik 18).
+- Stil motoru: `motor/`. asaformn-edit sahneleri bu motorla şeffaf arka planlı (alpha) video olarak üretilir.
 - Ton ve ses kuralları: `kurallar/ton-matrisi.md`, `kurallar/ses-miksi.md`, `sesler/kenney/` altındaki sfx analizi.
 - Stil rehberi: `stiller/asaformn-edit/STYLE.md`.
 - Kullanıcının kart kütüphanesi: `kutuphane/` (ayrıntı için `kutuphane/README.md` ve `kutuphane/katalog.md`).
@@ -50,8 +50,13 @@ Ton cümlesi eksikse işe başlanmaz. Önce kullanıcıya sorulur.
 
 ## Adım 1: Sesi anlama (özellik 18, 8)
 
-1. Seslendirme dosyası WhisperX ile yazıya dökülür:
-   `npx @veedstudio/openedit-cli transcribe --provider whisperx`
+1. Seslendirme dosyasının kelime zamanları çıkarılır:
+   `scripts/kelime_zamanlari.py SES --cikti x.json`
+   - Script faster-whisper "small" modelini Türkçe ve `word_timestamps` ile çalıştırır.
+   - Çıktı `[{"w","s","e"}]` biçiminde bir listedir: `w` kelime, `s` başlangıç, `e` bitiş.
+   - Whisper özel adları yanlış duyabilir: "Kanlıdivane" → "kanlı divane", "obruğun" → "oburun". Metin elle düzeltilir, zamanlar kalır.
+   - İlk çalıştırmada model Hugging Face'ten iner (~500 MB).
+   - DaVinci'nin kendi altyazı API'leri (`CreateSubtitlesFromAudio`, `TranscribeAudio`) Türkçe kelime zamanı vermediği için kullanılmaz.
 2. Her kelimenin başlangıç ve bitiş zamanı alınır. Bu zamanlar timeline'ın kare ızgarasına yuvarlanır.
 3. Cümle ve konuşma aralıkları çıkarılır. Duraklar, bölüm sınırları ve kelime anları buradan belirlenir.
 
@@ -78,7 +83,11 @@ python3 vendor/saas-motion-kit/variety_audit.py PLAN.md --history ~/.asaformn-ed
 
 ## Adım 3: Üretim
 
-- **asaformn-edit sahneleri:** stil motoru ile şeffaf arka planlı video olarak üretilir. Kâğıt arka planı ayrı bir katman olarak sabit kalır (`stiller/asaformn-edit/STYLE.md`, bölüm 10).
+- **asaformn-edit sahneleri:** stil motoru (`motor/`) ile şeffaf arka planlı video olarak üretilir. Kâğıt arka planı V1'de ayrı bir PNG (`kagit`) olarak durur, sahneler V2'de şeffaf kalır (`stiller/asaformn-edit/STYLE.md`, bölüm 10).
+  - **Sahne dosyası:** `motor/asaformn-edit/sahneler/*.json`. Her öğenin `t` değeri ilgili kelimenin başlangıcına kilitlenir. Örnekler: `uyku-ornek.json`, `kanlidivane-kyk.json` (kelimeler: `kyk-kelimeler.json`).
+  - **Render:** `cd motor/asaformn-edit && node render.mjs --clip --alpha --fps 30 --sahne sahneler/X.json --out X.mov`. `.mov` ve `--alpha` birlikte PNG kodekli MOV üretir. Resolve 21.1.2, ffmpeg'in ürettiği ProRes 4444 alfasını yok sayar; kâğıt yerine siyah görünür. Bu yüzden ProRes 4444 kullanılmaz. PNG-MOV ve QuickTime Animation (qtrle) alfayı doğru taşır.
+  - **Titreşim:** `motor.js` başında `BOIL_HZ=4` ve `BOIL_STEP=.35` ayarlıdır. Bu değerler fps'ten bağımsızdır. Eskiden 30 fps'te her karede değişip titremeye yol açıyordu.
+  - **Bulutta çalışmak:** cihaza tek dosyada yaklaşık 25 MB sınırı vardır. Kareler PNG olarak `tar | split -b 23M` ile parçalanır ve SSD'ye yazılır. Mac tarafında `cat parca.* | tar x` ile açılır ve ffmpeg ile PNG-MOV'a çevrilir. Mac'te yerel çalışırken buna gerek yoktur.
 - **Fotoğraflar:** internetten aranmaz (Pexels/Unsplash özelliği 25 Kasım'da çıkarıldı). Sadece kullanıcının `kutuphane/`ye koyduğu fotoğraflar kullanılır. Fotoğraf sketchnote filtresinden geçirilir. Kalabalık fotoğraflar filtreden temiz çıkmadığı için tek nesneli olanlar seçilir.
 - **Kullanıcı kartları:** `kutuphane/katalog.md` içinden uygun olan seçilir (kütüphane açıklaması aşağıda).
 - **Kartlar ve geçişler:** kinetik yazı kuralları ve geçiş kataloğuna göre kurulur (özellik 2, 12). asaformn-edit stilinde geçiş ya müzik vuruşunda kesim ya da bir şeyin içinden geçen kamera hareketidir.
@@ -88,12 +97,14 @@ python3 vendor/saas-motion-kit/variety_audit.py PLAN.md --history ~/.asaformn-ed
 
 Yerleştirme kelime zamanlarına göre yapılır (özellik 8). Konuşmadaki kelime anında kart, şekil ya da yazı ekrana gelir.
 
+DaVinci tarafı `scripts/davinci/` altındaki scriptlerle yapılır. Bunlar DaVinci MCP aracındaki `run_script` ile çalışır: dosya metninin başına `PARAMS = {...}` eklenir. Sandbox içinde `globals()`, `eval` ve dosya erişimi yoktur. Ayrıntı ve açık noktalar `scripts/davinci/README.md` dosyasındadır.
+
 Parça düzeni:
 
 | Parça | İçerik |
 |---|---|
-| V1 | Kâğıt arka planı (sabit) |
-| V2 | asaformn-edit sahneleri |
+| V1 | Kâğıt arka planı (sabit, ayrı `kagit` PNG'si) |
+| V2 | asaformn-edit sahneleri (şeffaf) |
 | V3 | Kartlar ve yazılar |
 | V4 | Altyazılar (özellik 19) |
 | A1 | Seslendirme |
@@ -107,15 +118,15 @@ Yazılar ve kartlar seslendirmedeki kelimeyle aynı anda başlar. Giriş hareket
 Her iş bitince kontrol döngüsü çalışır:
 
 1. Timeline render edilir.
-2. Ana kontrol:
+2. Ses master: `python3 scripts/master.py render.mp4` çalışır ve `render_master.mp4` üretilir. Script ffmpeg `loudnorm` ile iki geçiş yapar. Hedef -14 LUFS entegre ve -1 dBTP tepe; AAC payı için iç hedef -1,5 dBTP'dir. Görüntü yeniden kodlanmaz. KYK denemesinde -18,5 LUFS'ten -14,0 LUFS'e çıkıldı, tepe -1,5 dBTP oldu (özellik 7).
+3. Ana kontrol:
    `python3 scripts/kontrol.py VIDEO --platform youtube --length N`
    Bu komut baştaki siyah ya da beyaz kareyi bulur (özellik 1), donmuş anları arar (özellik 5), ses seviyesini ölçer (özellik 4) ve platform kurallarına göre GEÇTİ / UYARI / KALDI sonucu verir (özellik 24).
-3. Teslim öncesi tam kontrol:
+4. Teslim öncesi tam kontrol:
    `npx @veedstudio/openedit-cli review VIDEO --transcript T`
    Rakam kontrolü, yazı boyutu ve kontrastı, ses boşlukları ve ölü kuyruk burada kontrol edilir (özellik 17).
-4. Okuma süresi kontrolü: her yazı okunacak kadar kalıyor mu (özellik 15).
-5. Efekt doğrulama: her ses efektinin son render'da duyulup duyulmadığı ölçülür (özellik 9).
-6. Ses master: -14 LUFS, -1 dBTP (özellik 7).
+5. Okuma süresi kontrolü: her yazı okunacak kadar kalıyor mu (özellik 15).
+6. Efekt doğrulama: her ses efektinin son render'da duyulup duyulmadığı ölçülür (özellik 9).
 7. Claude kontak sayfası görüntülerini kendisi açar ve bakar. Her sorun düzeltilir, sonra kontrol tekrarlanır. Bu adım bitmeden iş tamam sayılmaz.
 
 ## Adım 6: İnceleme sayfası (özellik 22)

@@ -59,15 +59,24 @@ Dört script canlı denendi. Doğrulananlar (kodda `# DOGRULANDI 21.1.2`):
 - `AddTrack('audio','stereo')` çalışır.
 - `SetSpeed({"Percentage": 50, "RippleTimeline": False})` süreyi DEĞİŞTİRMEZ (kaynak yarıya iner). `RippleTimeline: True` tüm parçalardaki sonraki klipleri kaydırır ve sesi böler, kullanılmaz. Script `sure_sn` varsa o süreyi, yoksa tüm kaynağı yavaşlatılmış uzunlukta (`yavas` 50 ile 2 sn klip 4 sn) `SetRightOffset` ile kurar.
 - Retime: `RetimeProcess` 3 (= `resolve.RETIME_OPTICAL_FLOW`), `MotionEstimation` 5 (= `MOTION_EST_SPEED_WARP_BETTER`) geri okunarak doğrulandı.
-- `dikey_timeline`: 1080x1920 ayarı tutar, fps kaynaktan gelir (`timelineFrameRate` ayarı False döner, eşitse atlanır), hızlı klip süresi korunur. Ses seviyesi kopyalanmaz; script elle taşır.
+- `dikey_timeline`: 1080x1920 ayarı tutar, hızlı klip süresi korunur. Ses seviyesi kopyalanmaz; script elle taşır (25 Kasım: keypress -12 dB dikeye -12 olarak geçti, doğrulandı). fps: `SetSettings({"timelineFrameRate": "25.0"})` REDDEDİLİR (False), `"25"` kabul edilir; script artık `'%g'` ile metne çevirir (`_fps_metin`). Boş timeline'da fps ayarlanabilir (medya eklenmeden önce).
 - `render.py`: `('mp4','H264')`, `SetCurrentRenderMode(1)`, `AudioCodec 'aac'` kabul edildi; `time.sleep` ile bekleme çalışır; 12 sn'lik 1080p render 19.7 sn'de "Complete" oldu, dosya yazıldı.
+
+Doğrulandı 25 Kasım (Resolve Studio 21.1.2):
+
+- 25 fps timeline (`CreateEmptyTimeline` + `useCustomSettings=1` + `timelineFrameRate="25"`, medyadan önce): `ses_bul` fps 25 ve 12 sn = 300 kare doğru; `yerlestir` kare konumları sn x 25 (1 sn = +25, 6 sn = +150), süreler doğru (4 sn = 100 kare, 2 sn yavaş klip = 50 kare), 30 fps kaynak kliple bile.
+- 30 fps kaynak, 25 fps timeline: `startFrame/endFrame` KAYNAK karesi (4 sn = 120 kaynak karesi); %50 yavaş klip 30 kaynak karesi (1 sn kaynak -> 2 sn); RetimeProcess=3, MotionEstimation=5 geri okundu.
+- `dikey_timeline` 25 fps kaynaktan: 1080x1920, 25 fps, konumlar ve süreler (0-5 sn -> 125 kare) doğru. (Hata düzeltildi: önceki sürüm fps'i 30'da bırakıyordu, çünkü "25.0" reddediliyordu.)
+- Dikey kopyada ses -12 dB korunuyor.
+- `render.py` KYK timeline'ı (V2 klibi ReplaceClip ile değiştirilmiş) 2.9 sn'de Complete.
 
 Hâlâ açık:
 
-- 30 fps dışı timeline'larda ses/kaynak karesi birimi ve 23.976/29.97 yuvarlaması denenmedi.
-- Kaynağı timeline fps'inden farklı (ör. 24 fps) kliplerde `startFrame` kaynak karesi sayılır varsayıldı; denenmedi.
-- `GetSourceStartFrame` ses kliplerinde kaynak başlangıcı verir (hedef: 0'dan başlayan klip), kırpılmış ses klibi denenmedi.
+- 23.976/29.97 timeline'larda yuvarlama denenmedi (kod `'%g'` ile 23.976 yazar; Resolve'un kabulü doğrulanmadı).
+- Hızlı (yavaşlatılmış) klibin dikey kopyası 25 fps'te denenmedi (kesit hızlı klibi içermiyordu).
+- `GetSourceStartFrame` ses kliplerinde kaynak başlangıcı verir (hedef: 0'dan başlayan klip), kırpılmış ses klibi denenmedi. Ses `GetSourceEndFrame` 25 fps timeline'da 30'luk birimde görünüyor (5 sn = 150).
 - Hızlı klipte `sure_sn` kaynaktan uzunsa süre kaynakla sınırlı kalır.
+- Canlı testten kalan timeline'lar silinmedi: `_fpstest`, `fps25-kesit (dikey)` (fps 30, hatalı), `fps25-kesit-b (dikey)`, `FPS25`, `kesit2 (dikey)`.
 
 Diğer sınırlar:
 

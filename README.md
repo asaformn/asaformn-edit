@@ -4,6 +4,31 @@ Claude'un DaVinci Resolve'da kurgu yapması için bir skill. Seslendirmeyi timel
 
 > Durum: yapım aşamasında.
 
+## Kurulum (Mac)
+
+**Gerekenler:**
+
+- DaVinci Resolve Studio (scripting açık)
+- Python 3
+- Node.js
+- ffmpeg 6.1 veya üstü. Bu sürüm `check.py` ve `look.py` için gerekir. DaVinci Resolve'un kendi sürümüyle ilgisi yoktur.
+- Google Chrome (ya da Chromium, Edge, Brave)
+
+**Bağımlılıklar:**
+
+```
+cd motor && npm i
+pip3 install faster-whisper
+```
+
+`npm i` ile `playwright-core` kurulur.
+
+**Chrome yolu:** `render.mjs` tarayıcıyı şu sırayla bulur: `CHROME_PATH` ortam değişkeni, sonra `/Applications` altındaki Chrome, Chromium, Edge ya da Brave, en son Linux yolları. Otomatik bulunamazsa:
+
+```
+CHROME_PATH=... node render.mjs ...
+```
+
 ## Özellikler ve kaynakları
 
 | # | Özellik | Kaynak repo | Lisans |
@@ -25,7 +50,7 @@ Claude'un DaVinci Resolve'da kurgu yapması için bir skill. Seslendirmeyi timel
 | 15 | Okuma süresi kontrolü (her yazı okunacak kadar ekranda kalıyor mu) | [lemomo-ai/lemo-opuscar](https://github.com/lemomo-ai/lemo-opuscar) | MIT |
 | 16 | **asaformn-edit** stili: No.17 Sketchnote görünüşü + No.18 Stick-figure Explainer hareketi ([`stiller/asaformn-edit`](stiller/asaformn-edit/STYLE.md)) | [lemomo-ai/lemo-opuscar](https://github.com/lemomo-ai/lemo-opuscar) | CC BY-NC 4.0 (stil rehberi), MIT (motor kodu) |
 | 17 | Teslim öncesi tam kontrol: rakam kontrolü (ekrandaki sayı seslendirmede geçiyor mu), yazı boyutu ve kontrastı, ses boşlukları, ölü kuyruk | [veedstudio/open-edit](https://github.com/veedstudio/open-edit) | Apache-2.0 |
-| 18 | Ücretsiz ve yerel yazıya dökme (WhisperX, kelime kelime zaman damgası) — 8 numaranın motoru | [veedstudio/open-edit](https://github.com/veedstudio/open-edit) | Apache-2.0 |
+| 18 | Ücretsiz ve yerel yazıya dökme (kelime kelime zaman damgası) — 8 numaranın motoru. Fikir open-edit'ten; uygulama `scripts/kelime_zamanlari.py` (faster-whisper) | [veedstudio/open-edit](https://github.com/veedstudio/open-edit) | Apache-2.0 |
 | 19 | Kelime kelime altyazı (konuşmanın kırıldığı yerden bölme, en fazla 7 sn ve 2×42 karakter, söylenen kelimeyi vurgulama) | [veedstudio/open-edit](https://github.com/veedstudio/open-edit) | Apache-2.0 |
 | 20 | Çeşitlilik denetimi (plandaki tekrar eden geçiş, hareket, ses ve sahne uzunluklarını bulur; son 3 videoyu hatırlar) | [tugrawork-creator/saas-motion-kit](https://github.com/tugrawork-creator/saas-motion-kit) | MIT |
 | 21 | Ton matrisi (tona göre tempo, yay, kamera ve ses; asaformn-edit stiline uyarlandı, glitch ve benzeri yok) ([`kurallar/ton-matrisi.md`](kurallar/ton-matrisi.md)) | [tugrawork-creator/saas-motion-kit](https://github.com/tugrawork-creator/saas-motion-kit) | MIT |

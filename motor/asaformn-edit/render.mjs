@@ -9,7 +9,14 @@ const sahne = arg('sahne', 'sahneler/uyku-ornek.json'), alpha = !!arg('alpha', f
 const mime = { '.html': 'text/html', '.js': 'text/javascript', '.json': 'application/json', '.ttf': 'font/ttf' };
 const srv = http.createServer((q, r) => { const f = path.join(root, decodeURIComponent(q.url.split('?')[0])); fs.readFile(f, (e, d) => { if (e) { r.writeHead(404); r.end() } else { r.writeHead(200, { 'content-type': mime[path.extname(f)] || 'application/octet-stream' }); r.end(d) } }) }).listen(0);
 const port = srv.address().port;
-const br = await chromium.launch({ executablePath: '/usr/bin/google-chrome', args: ['--no-sandbox'] });
+// Chrome yolu: CHROME_PATH > Mac (Chrome, Chromium, Edge, Brave) > Linux. Hicbiri yoksa Playwright'in kendi Chromium'u denenir.
+const adaylar = [process.env.CHROME_PATH,
+  '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/Applications/Chromium.app/Contents/MacOS/Chromium',
+  '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge', '/Applications/Brave Browser.app/Contents/MacOS/Brave Browser',
+  path.join(process.env.HOME || '', 'Applications/Google Chrome.app/Contents/MacOS/Google Chrome'),
+  '/usr/bin/google-chrome', '/usr/bin/google-chrome-stable', '/usr/bin/chromium', '/usr/bin/chromium-browser'].filter(Boolean);
+const chromeYolu = adaylar.find(p => { try { return fs.statSync(p).isFile() } catch { return false } });
+const br = await chromium.launch({ ...(chromeYolu ? { executablePath: chromeYolu } : {}), args: ['--no-sandbox'] });
 const pg = await br.newPage({ viewport: { width: 1920, height: 1080 } });
 pg.on('console', m => m.type() === 'error' && console.error('[page]', m.text())); pg.on('pageerror', e => console.error('[pageerror]', e.message));
 await pg.goto(`http://localhost:${port}/motor/asaformn-edit/index.html?sahne=${sahne}${alpha ? '&alpha=1' : ''}`);

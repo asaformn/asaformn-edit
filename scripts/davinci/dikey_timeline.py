@@ -76,6 +76,15 @@ def _fps_duzelt(v):
     return v
 
 
+def _fps_metin(v):
+    """SetSettings fps degerini metne cevirir. DOGRULANDI 21.1.2: "25" kabul edilir, "25.0" REDDEDILIR (False);
+    tam sayi ise ondaliksiz, degilse en kisa gosterim (23.976)."""
+    try:
+        return '%g' % float(v)
+    except Exception:
+        return str(v)
+
+
 def _sure_ayarla(it, hedef):
     """Timeline suresini SetRightOffset ile hedef kareye getirir (DOGRULANDI 21.1.2: sure = tam - ro)."""
     try:
@@ -190,7 +199,7 @@ def main():
             continue
         # timeline'a ozel ayarlar, tek tek (hangisi tutmadi gorulsun)
         ayarlar = [('useCustomSettings', '1'), ('timelineResolutionWidth', W),
-                   ('timelineResolutionHeight', H), ('timelineFrameRate', str(fps_ham)),
+                   ('timelineResolutionHeight', H), ('timelineFrameRate', _fps_metin(fps_ham)),
                    ('timelineOutputResolutionWidth', W), ('timelineOutputResolutionHeight', H)]
         for a, v in ayarlar:
             # DOGRULANDI 21.1.2: timelineFrameRate bos timeline'da bile False doner; zaten esitse atla.
